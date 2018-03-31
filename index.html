@@ -1,0 +1,110 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>OpenHikingMaps - Italy - Arco</title>
+<meta charset="utf-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta property="og:image" content="arco.jpg" />
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.2.0/dist/leaflet.css" />
+
+<style type="text/css">
+
+html, body { width: 100%; height: 100%; margin: 0; padding: 0;}
+h3 {
+	float: left;
+	margin:0 10px;
+	padding: 0;
+	line-height: 20px;
+}
+p {
+	line-height: 20px;
+}
+#copy {
+  font-size:12px;
+  position:fixed;
+  z-index:1000;
+  right:10px;
+  top:-8px;
+  font-size:.85em;
+  padding: 10px 6px 3px 6px;
+  background: #eee;
+  border-radius: 6px;
+  opacity: 0.9;
+  box-shadow:2px 2px 3px rgba(0,0,0,0.3);
+}
+#map, #container { width: 50%; height: 100%; }
+#map { float: left; }
+#container { float: right; }
+#container .map { width: 100%; height: 100%; }
+</style>
+</head>
+<body>
+  <h3><a href="http://labs.easyblog.it/maps/open-hiking-maps/">OpenHikingMaps</a> &bull; Italy &bull; Arco</h3>
+  <p>OpenHikingMaps is a OpenStreetMap rendering layer like mapnik, but primarily aimed at showing simple information useful to hikers.</p>
+
+	<div id="map" class="map"></div>
+    <div id="container">
+        <div id="map1" class="map"></div>
+        <div id="map2" class="map"></div>
+    </div>
+
+  <div id="copy">
+    <a href="http://labs.easyblog.it/">Labs</a> &bull; by <a rel="author" href="http://labs.easyblog.it/stefano-cudini/">Stefano Cudini</a>
+  </div>
+</div>
+<script src="https://unpkg.com/leaflet@1.2.0/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet.sync@0.2.2/L.Map.Sync.js"></script>
+<script>
+
+	var kompassKey = "G7EVQRBVIPGUKZGW6ZTY9SEFILMTVSKB",
+		thunderKey = '5a5f1f587e9e49e2953dfb6b92f69d5e',
+		format = 'jpg',
+		path = './';
+
+	var mapOpts = {
+		zoom: 13,  
+		minZoom: 13,
+		maxZoom: 16,
+		center: [45.88, 10.88],
+		zoomControl:false
+	};
+
+	var map = L.map('map', mapOpts);
+	var map1 = L.map('map1', mapOpts);
+
+
+	L.control.zoom().addTo(map);
+
+	var layersOsm = {
+		'OpenCycleMap': L.tileLayer('https://{s}.tile.thunderforest.com/cycle/{z}/{x}/{y}.png?apikey={k}', {k: thunderKey}).addTo(map1),
+		'Thunderforest': L.tileLayer('https://{s}.tile.thunderforest.com/landscape/{z}/{x}/{y}.png?apikey={k}', {k: thunderKey}),
+		'Kompass': L.tileLayer('http://ec{s}.cdn.ecmaps.de/WmsGateway.ashx.jpg/kompass-promotion/KOMPASS/{z}/{x}/{y}.png?licensekey={k}', {k: kompassKey, subdomains: '0123'})
+	};
+
+	var layersOhm = {
+		'OpenHikingMaps Full': L.tileLayer(path+'full/{z}/{x}/{y}.'+format, {tms: true}).addTo(map),
+		'OpenHikingMaps Flat': L.tileLayer(path+'flat/{z}/{x}/{y}.'+format, {tms: true}),
+		'OpenHikingMaps Print': L.tileLayer(path+'skel/{z}/{x}/{y}.'+format, {tms: true})
+	};
+
+	L.control.layers(layersOhm,null, {
+		collapsed: false
+	}).addTo(map);
+	
+	L.control.layers(layersOsm,null, {
+		collapsed: false
+	}).addTo(map1);	
+
+    map.sync(map1, {offsetFn: L.Sync.offsetHelper([1, 0], [0, 0])});
+
+//	map.on('moveend', function() {
+//		console.log(map.getCenter(), map.getZoom())
+//	});
+
+</script>  
+<script src="/labs-common.js"></script>
+</body>
+</html>
